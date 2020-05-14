@@ -3,9 +3,9 @@
 #include <iostream>
 
 namespace {
-auto write(void *source, size_t, size_t nmemb, void *destination_) -> size_t {
-    auto *destination{static_cast<std::string *>(destination_)};
-    destination->append(static_cast<char *>(source), nmemb);
+auto write(void *source, size_t, size_t nmemb, void *destination) -> size_t {
+    static_cast<std::string *>(destination)
+        ->append(static_cast<char *>(source), nmemb);
     return nmemb;
 }
 
@@ -63,13 +63,9 @@ int main() {
     std::cout << "response: " << id << '\n';
     std::cout << "importing record...";
     curl.setPostFields("token=" + token +
-        "&content=record&format=json&"
-        "type=flat&overwriteBehavior=normal&forceAutoNumber=false&data=[{"
-        "\"record_"
-        "id\":\"" +
+        R"(&content=record&format=json&type=flat&overwriteBehavior=normal&forceAutoNumber=false&data=[{"record_id":")" +
         id +
-        "\", \"scent\":\"splendid\"}]&"
-        "returnContent=count&returnFormat=json");
+        R"(", "scent":"splendid"}]&returnContent=count&returnFormat=json)");
     auto response{curl.post()};
     std::cout << "\nfinished.\n";
     std::cout << "response: " << response << '\n';
