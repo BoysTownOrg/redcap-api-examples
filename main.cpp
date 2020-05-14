@@ -1,5 +1,6 @@
 #include <curl/curl.h>
 #include <string>
+#include <iostream>
 
 namespace {
 auto write(void *source, size_t, size_t nmemb, void *destination_) -> size_t {
@@ -49,4 +50,27 @@ class Curl {
 };
 }
 
-int main() {}
+int main() {
+    Curl curl;
+    curl.setUrl("https://study.boystown.org/api/");
+    std::cout << "Enter token: ";
+    std::string token;
+    std::cin >> token;
+    curl.setPostFields("token=" + token + "&content=generateNextRecordName");
+    std::cout << "generating next record...";
+    auto id{curl.post()};
+    std::cout << "\nfinished.\n";
+    std::cout << "response: " << id << '\n';
+    std::cout << "importing record...";
+    curl.setPostFields("token=" + token +
+        "&content=record&format=json&"
+        "type=flat&overwriteBehavior=normal&forceAutoNumber=false&data=[{"
+        "\"record_"
+        "id\":\"" +
+        id +
+        "\", \"scent\":\"splendid\"}]&"
+        "returnContent=count&returnFormat=json");
+    auto response{curl.post()};
+    std::cout << "\nfinished.\n";
+    std::cout << "response: " << response << '\n';
+}
